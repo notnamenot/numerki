@@ -1,1 +1,2 @@
 # numerki
+metody numeryczne
