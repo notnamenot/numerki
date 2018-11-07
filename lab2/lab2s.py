@@ -77,7 +77,7 @@ def G_p(n):         #analitycznie nie, numerycznie tak!!!
 g = G_p(24)
 pi = round(math.pi,15)
 print("numerycznie:\n",g)
-print("\nanalitycznie:\npi =",pi,"(niezależy od p)")
+print("\nanalitycznie:\npi =",pi,"(nie zależy od p)")
 #jak sumujemu od początku to błąd maleje maleje maleji i potem nie maleje; gorszy
 #jak sumujemu od końca to bład dochodzi  do 0 ; lepszy wyniki
 
@@ -181,7 +181,7 @@ print("\nIlość bitów mantysy określa precyzję zapisu. Im jest większa, tym
 
 
 print("\nZad 5\n")
-
+"""
 def sum_n(n):
     res = 0.0
     for i in range(1,n+1):
@@ -191,6 +191,8 @@ def sum_n(n):
 def pi(n):
     pi = math.sqrt(6.0*sum_n(n))
     return pi
+"""
+pi = lambda n : math.sqrt(6.0*sum([1/(i**2.0) for i in range(1,n+1)]))
 
 print("Przybliżenia liczby pi dla:")
 print("n = 1 :      ",pi(1))
@@ -200,7 +202,7 @@ print("n = 1000 :   ",pi(1000))
 print("n = 10000 :  ",pi(10000))
 print("n = 100000 : ",pi(100000))
 
-print("\nMamy tu do czynienia z błędęm obcięcia, powstałym podczas obliczeń, na skutek zmniejszania liczby działań (podczas obliczania sum nieskończonych). Im większa ilość wyrazów jest uwzględniana, tym błąd obcięcia jest mniejszy i możemy znaleźć tym dokładniejszą wartość wyrażenia. Mamy też do czynienia z błędem zaokrąglenia powstałym na skutek konieczności zaokrąglania obliczonych wartości ze względu na ograniczoną długość słów binarnych.")
+print("\nMamy tu do czynienia z błędęm obcięcia, powstałym podczas obliczeń, na skutek zmniejszania liczby działań (podczas \nobliczania sum nieskończonych). Im większa ilość wyrazów jest uwzględniana, tym błąd obcięcia jest mniejszy i możemy \nznaleźć tym dokładniejszą wartość wyrażenia. Mamy też do czynienia z błędem zaokrąglenia powstałym na skutek konieczności \nzaokrąglania obliczonych wartości ze względu na ograniczoną długość słów binarnych.")
 
 """
 Floating-point numbers are represented in computer hardware as base 2 (binary) fractions. For example, 
