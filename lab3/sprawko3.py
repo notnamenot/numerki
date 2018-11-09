@@ -156,8 +156,7 @@ print("m0 =",newton4,"\t\t\t\t\tczas działania =",nt4)
 
 # In[263]:
 
-
-## print("\nZadanie 4\n")
+print("\nZadanie 4\n")
 
 print("Warunki wystarczające zbieżności metody siecznych dla ustalonego punktu startowego:\n")
 print("\t1) Funkcja jest ciągła w przedziale domkniętym [a,b];")
