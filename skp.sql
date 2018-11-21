@@ -255,7 +255,7 @@ WHERE SQRT(gospodarze[1]) < LOG(2, gospodarze[1] + gospodarze[2] + gospodarze[3]
 --------3.7---------------
 
 --\T [STRING]            set HTML <table> tag attributes, or unset if none
---\pset [NAME[VALUE]]	 set table output option
+--\pset [NAME[VALUE]]	 set table output option		
 --\H                     toggle HTML output mode
 --\echo [STRING]         write string to standard output
 --\o [FILE]              send all query results to file or |pipe
@@ -496,15 +496,15 @@ GROUP BY miejscowosc ORDER BY 1;
 
 --------5.6---------------
 
-SELECT SUM(masa*sztuk) FROM zawartosc NATURAL JOIN czekoladki;
+SELECT SUM(masa*zawartosc.sztuk*artykuly.sztuk) FROM zawartosc NATURAL JOIN czekoladki JOIN artykuly USING(idpudelka);
 --lub
-WITH masypudelek AS (SELECT SUM(masa*sztuk) "masy" FROM zawartosc NATURAL JOIN czekoladki GROUP BY idpudelka)
-SELECT SUM(masypudelek.masy) "łączna masa pudełek" FROM masypudelek;
+WITH masypudelek AS (SELECT idpudelka, SUM(masa*sztuk) "masy" FROM zawartosc NATURAL JOIN czekoladki GROUP BY idpudelka)
+SELECT SUM(masypudelek.masy*artykuly.sztuk) "łączna masa pudełek" FROM masypudelek JOIN artykuly USING(idpudelka);
 
-SELECT SUM(sztuk*koszt) "łączna wartość pudełek" FROM zawartosc NATURAL JOIN czekoladki JOIN pudelka USING(idpudelka);
+SELECT SUM(zawartosc.sztuk*koszt*artykuly.sztuk) "łączna wartość pudełek" FROM zawartosc NATURAL JOIN czekoladki JOIN pudelka USING(idpudelka) JOIN artykuly USING(idpudelka);
 --lub
-WITH cenypudelek AS (SELECT SUM(sztuk*koszt) "ceny" FROM zawartosc NATURAL JOIN czekoladki GROUP BY idpudelka)
-SELECT SUM(cenypudelek.ceny) "łączna wartość pudełek" FROM cenypudelek;
+WITH cenypudelek AS (SELECT idpudelka, SUM(sztuk*koszt) "ceny" FROM zawartosc NATURAL JOIN czekoladki GROUP BY idpudelka)
+SELECT SUM(cenypudelek.ceny*artykuly.sztuk) "łączna wartość pudełek" FROM cenypudelek JOIN artykuly USING(idpudelka);
 
 --------5.7---------------
 
@@ -527,3 +527,104 @@ GROUP BY p2.idpudelka ORDER BY p2.idpudelka;
 
 
 
+--------6.1---------------
+
+INSERT INTO czekoladki VALUES('w98', 'Biały kieł', 'biała', 'laskowe', 'marcepan', 'Rozpływające się w rękach i kieszeniach.', 0.45, 20);
+
+INSERT INTO klienci VALUES 
+	(90, 'Matusiak Edward', 'Kropiwnickiego 6/3', 'Leningrad', '31-471','031 423 45 38'),
+	(91, 'Matusiak Alina', 'Kropiwnickiego 6/3', 'Leningrad', '31-471','031 423 45 38'), 
+	(92, 'Kimono Franek', 'Karatekow 8', 'Mistrz', '30-029', '501 498 324');
+
+INSERT INTO klienci 
+SELECT 93, 'Matusiak Iza', ulica, miejscowosc, kod, telefon FROM klienci 
+WHERE nazwa='Matusiak Edward';
+
+--------6.2---------------
+
+INSERT INTO czekoladki VALUES('x91', 'Nieznana nieznajoma', null, null, null, 'Niewidzialna czekoladka wspomagajaca odchudzanie.', 0.26, 0);
+
+INSERT INTO czekoladki VALUES('m98', 'Mleczny raj', 'mleczna', null, null, 'Aksamitna mleczna czekolada w ksztalcie butelki z mlekiem.', 0.26, 36);
+
+--------6.3---------------
+
+DELETE FROM czekoladki WHERE idczekoladki IN ('x91','m98');
+
+INSERT INTO czekoladki(idczekoladki,nazwa,opis,koszt,masa) VALUES('x91', 'Nieznana Nieznajoma', 'Niewidzialana czekolada wspomagajaca odchudzanie',0.26,0);
+
+INSERT INTO czekoladki(idczekoladki,nazwa,czekolada,opis,koszt,masa) VALUES('m98', 'Mleczny raj','mleczna', 'Aksamitna mleczna czekolada w ksztalcie butelki z mlekiem.',0.26, 36);
+
+--------6.4---------------
+ 
+UPDATE klienci SET nazwa='Nowak Iza' WHERE nazwa='Matusiak Iza';
+
+UPDATE czekoladki SET koszt=koszt*0.9 WHERE idczekoladki IN ('w98','m98','x91');
+
+UPDATE czekoladki SET koszt=
+	(SELECT koszt FROM czekoladki WHERE idczekoladki='w98')
+WHERE nazwa='Nieznana Nieznajoma';
+
+UPDATE klienci SET miejscowosc='Piotrograd' WHERE miejscowosc='Leningrad';
+
+UPDATE czekoladki SET koszt=koszt+0.15 WHERE SUBSTR(idczekoladki,2,2)::int > 90; --substr(string, from [, count])
+
+--------6.5---------------
+
+DELETE FROM klienci 
+WHERE nazwa LIKE 'Matusiak%';
+
+DELETE FROM klienci 
+WHERE idklienta > 91;
+
+DELETE FROM czekoladki 
+WHERE koszt >= 0.45 OR masa >= 36 OR masa = 0;
+
+--------6.6---------------
+
+--skrypt66.sql
+INSERT INTO pudelka VALUES('wint', 'Winter collection','kolekcja ziomowa', 25, 100), ('sume','Summer collection','kolekcja letnia', 26, 400);
+INSERT INTO zawartosc VALUES('wint','d04', 3), ('wint','m01',4), ('wint','d08',3),('sume', 'b06', 5), ('sume','f02',5);
+
+--\i skrypt66.sql
+
+--------6.7---------------
+
+--skrypt67a.sql
+'spri' 'Spring collection.' 'kolekcja wiosenna' 0.35  41 
+'lato' 'Lato collection' 'kolekcja ziomowa' 0.34 40
+--skrypt67b.sql
+'spri' 'd04' 3
+'spri' 'm01' 4 
+'spri' 'd08' 3
+'lato' 'b06' 5
+'lato' 'f02' 5
+--skrypt67.sql
+COPY pudelka FROM 'skrypt67a';
+COPY zawartosc FROM 'skrypt67b';
+
+--\i skrypt67.sql
+--------6.8---------------
+
+UPDATE zawartosc SET sztuk=sztuk+1 WHERE idpudelka IN ('wint','sume');
+
+--skrypt68a.sql
+UPDATE czekoladki SET czekolada='brak'  
+WHERE czekolada IS NULL;
+
+UPDATE czekoladki SET orzechy='brak'
+WHERE orzechy IS NULL;
+
+UPDATE czekoladki SET nadzienie='brak'
+WHERE nadzienie IS NULL;
+--\i skrypt68a.sql
+
+--skrypt68b.sql
+UPDATE czekoladki SET czekolada=NULL  
+WHERE czekolada='brak';
+
+UPDATE czekoladki SET orzechy=NULL
+WHERE orzechy='brak';
+
+UPDATE czekoladki SET nadzienie=NULL
+WHERE nadzienie='brak';
+--\i skrypt68B.sql
