@@ -156,7 +156,10 @@ print("m0 =",newton4,"\t\t\t\t\tczas działania =",nt4)
 
 # In[263]:
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 866705b40c93a6b6eff364594a0d17e29d9ac87b
 print("\nZadanie 4\n")
 
 print("Warunki wystarczające zbieżności metody siecznych dla ustalonego punktu startowego:\n")
