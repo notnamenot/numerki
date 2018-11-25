@@ -157,7 +157,7 @@ print("m0 =",newton4,"\t\t\t\t\tczas działania =",nt4)
 # In[263]:
 
 
-## print("\nZadanie 4\n")
+print("\nZadanie 4\n")
 
 print("Warunki wystarczające zbieżności metody siecznych dla ustalonego punktu startowego:\n")
 print("\t1) Funkcja jest ciągła w przedziale domkniętym [a,b];")
@@ -208,15 +208,15 @@ nestedList=[["FUNKCJA","MIEJSCE ZEROWE","ITERACJI","CZAS OBLICZEŃ      [s]"],
             ["bisection",str(bi3)," ",str(bt3)],
             ["my_newton",str(newton1),str(it3),str(nt1)],
             ["newton",str(newton3)," ",str(nt3)],
-            ["my_secant",str(secant1),str(it5),str(nt1)],
-            ["secant",str(secant3)," ",str(nt3)],
+            ["my_secant",str(secant1),str(it5),str(st1)],
+            ["secant",str(secant3)," ",str(st3)],
             ["-"*15,"-"*23,"-"*9,"-"*22],
             ["my_bisection",str(bi2),str(it2),str(bt2)],
             ["bisection",str(bi4)," ",str(bt4)],
             ["my_newton",str(newton2),str(it4),str(nt2)],
             ["newton",str(newton4)," ",str(nt4)],          
-            ["my_secant",str(secant2),str(it6),str(nt2)],           
-            ["secant",str(secant4)," ",str(nt4)],]
+            ["my_secant",str(secant2),str(it6),str(st2)],           
+            ["secant",str(secant4)," ",str(st4)],]
 
 for item in nestedList:
     print("|",item[0]," "*(15-len(item[0])),"|",
