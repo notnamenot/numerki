@@ -13,11 +13,14 @@ import numpy as np
 import scipy.interpolate
 import matplotlib.pyplot as plt
 import scipy.misc
+from scipy.interpolate import lagrange
+from scipy.interpolate import interp1d
     
 
 print("Zad1\n")
 
 def my_interpolate_lagrange(x_values,y_values):
+    assert len(x) == len(y) != 0
     def fun(x):
       sum = 0
       for i in range (len(x_values)):#??
@@ -41,105 +44,78 @@ def f(x):
     return 1/(25*x*x +1)
 
 x0 = np.linspace(-2,2,200)
-y0 = []
-for i in range(x0.size):
-    y0.append(f(x0[i]))
+y0 = [ f(x0[i]) for i in range(x0.size) ]
+
     
 x = np.linspace(-2,2,21)
-y = []
-for i in range(x.size):
-    y.append(f(x[i]))
-   
+y = [ f(x[i]) for i in range(x.size) ]
+  
     
 n=21
-xc=[]                   #węzły czebyszew
-for k in range(1, n+1):
-    xc.append(math.cos(math.pi*(2*k-1)/(2*n)))
-#xc = [math.cos(math.pi*(2*k-1)/(2*n)) for k in range(1, n+1)]
-for i in range(len(xc)):
-   xc[i] = 2*xc[i]
+
+#xc=[]                   #węzły czebyszew
+#for k in range(1, n+1):
+#    xc.append(math.cos(math.pi*(2*k-1)/(2*n)))
+xc = [ 2*math.cos(math.pi*(2*k-1)/(2*n)) for k in range(1, n+1) ] #węzły czebyszewa
+    
+#for i in range(len(xc)):#dostosowanie do przedziału
+#   xc[i] = 2*xc[i]      
 xc=xc[::-1]
 xch=np.array(xc)
 ych=f(xch)
-#print(xc)   
-#print(ych)    
-
-my_fun = my_interpolate_lagrange(x,y)
-my_funch = my_interpolate_lagrange(xch,ych)
-
-#interp1d = scipy.interpolate.interp1d(x0,y0)
-#interp1dch = scipy.interpolate.interp1d(xch,ych)
-#xnew = np.linspace(-2,2,21)
-#ynew=interp1d(xnew)
-
-#slpl = scipy.interpolate.splrep(x,y,s=0,k=3)
-#slpl = scipy.interpolate.splrep(xch,ych,k=3)
-spl = scipy.interpolate.InterpolatedUnivariateSpline(x, y,k=3)
-splch = scipy.interpolate.InterpolatedUnivariateSpline(xch, ych,k=3)  
-
-#scipy.interpolate.lagrange
-#lg = scipy.interpolate.lagrange(x,y)
-
-#polyfit = np.polyfit(x,y,3)    #Fit a polynomial p(x) = p[0] * x**deg + ... + p[deg] of degree deg to points (x, y). 
-#p = np.poly1d(polyfit)
-#print(polyfit)
-
-#poly1d = np.poly1d(np.polyfit(x, y, 21))#poly1d dostaje współczynniki i jest wielomianem
 
 
-#chebroots=np.polynomial.chebyshev.chebroots(x)
-#print(chebroots)
-#chebfit=np.polynomial.chebyshev.chebfit(x,y,3) #Chebyshev coefficients ordered from low to high
-#chebinterpolate=np.polynomial.chebyshev.Chebyshev.interpolate(f,3)
-#print(chebfit)
-
-
-plt.figure(num=None, figsize=(9, 7), dpi=80)
-plt.plot(x0,f(x0), 'g-',label='f(x)')
+plt.figure(num=None, figsize=(12, 8), dpi=80)
+plt.plot(x0,y0, linestyle='-',linewidth=0.5, color='black', label='y=f(x)')
 plt.plot(x,f(x), 'co',label='węzły równoodległe')
 plt.plot(xch,f(xch), 'ro',label='węzły Czebyszewa')
-plt.plot(x,spl(x),'c--',label='m. funkcji sklejanych z węzłami równoodległymi')
-plt.plot(xch,splch(xch),'r--',label='m.a funkcji sklejanychz węzłami czebyszewa')
-plt.title('Interpolacja funkcjami sklejanymi',fontsize=18)
+plt.plot(x0,lagrange(x,y)(x0),'c-',label='m. Lagrange\'a z węzłami równoodległymi')
+plt.plot(x0,lagrange(xch,ych)(x0),'r-',label='m. Lagrange\'a z węzłami czebyszewa')
+plt.title('Interpolacja metodą Lagrange\'a',fontsize=18)
 plt.xlabel('x',fontsize=14)
-plt.ylabel('f(x)',fontsize=14)
-plt.legend(loc='upper right',prop={'size': 8})
+plt.ylabel('y',fontsize=14)
+plt.ylim(bottom=-0.4,top=1.1)
+plt.legend(loc='upper right',prop={'size': 10})
+#plt.grid()
 plt.show()
 
 
 
-plt.figure(num=None, figsize=(9, 7), dpi=80)
-plt.plot(x0,f(x0), 'g-',label='f(x)')
-plt.plot(x,f(x), 'co',label='węzły równoodległe')
-plt.plot(xch,f(xch), 'ro',label='węzły Czebyszewa')
-plt.plot(x,my_fun(x),'c--',label='m. Lagrange\'a z węzłami równoodległymi')
-plt.plot(xch,my_funch(xch),'r--',label='m. Lagrange\'a z węzłami czebyszewa')
-plt.title('Interpolacja metodą Lagrange\'a',fontsize=18)
+
+plt.figure(num=None, figsize=(12, 8), dpi=80)
+plt.plot(x0,y0, linestyle='-',linewidth=0.5, color='black',label='y=f(x)')
+plt.plot(x,y, 'co',label='węzły równoodległe')
+plt.plot(xch,ych, 'ro',label='węzły Czebyszewa')
+plt.plot(x0,interp1d(x,y,'cubic')(x0),'c-',label='m. funkcji sklejanych z węzłami równoodległymi')
+plt.plot(x0,interp1d(xch,ych,'cubic',bounds_error=False)(x0),'r-',label='m. funkcji sklejanychz węzłami czebyszewa')
+plt.title('Interpolacja metodą funkcji sklejanych',fontsize=18)
 plt.xlabel('x',fontsize=14)
-plt.ylabel('f(x)',fontsize=14)
+plt.ylabel('y',fontsize=14)
+plt.ylim(bottom=-0.2,top=1.1)
 plt.legend(loc='upper right',prop={'size': 9})
 plt.show()
 
 
 #interpolacja nie stosuje sie do wysokich rzedów; sklejanie albo aproksymacja
 #interpolacja nie mówi co sie dzieje miedzy punktami
+print("W przypadku węzłów równoodległych mamy do czynienia z \"efektem Rungego\". Początkowo ze wzrostem liczby węzłów przybliżenie poprawia się, jednak po dalszym wzroście zaczyna się pogarszać, co jest szczególnie widoczne na końcach przedziału." )
+print("Takie zachowanie wielomianu interpolującego jest zjawiskiem typowym dla interpolacji za pomocą wielomianów wysokich stopni przy stałych odległościach węzłów.")
+print("Aby uniknąć tego efektu, stosuje się interpolację z węzłami coraz gęściej upakowanymi na krańcach przedziału interpolacji - węzłami Czebyszewa.")
 
 
 print("\nZad3\n")
-
-x=[-10.0,-9.0,-8.0,-7.0,-6.0,-5.0,-4.0,-3.0,-2.0,-1.0,0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0]
+x=[i for i in range(-10,11)]
+print(x)
+#x=[-10.0,-9.0,-8.0,-7.0,-6.0,-5.0,-4.0,-3.0,-2.0,-1.0,0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0]
 y=[-9.10,-8.82,-7.99,-7.10,-6.32,-5.33,-4.73,-3.65,-2.52,-1.28,0.00,1.26,2.49,3.61,4.61,5.51,6.32,7.10,7.81,8.45,9.02]
 
-#scipy.interpolate.lagrange
-lg = scipy.interpolate.lagrange(x,y)
-
+#lg = scipy.interpolate.lagrange(x,y)
 interp1d = scipy.interpolate.interp1d(x,y,kind='linear')#interp1d zwraca funkcję interpolującą
 
-
-polyfit1 = np.polyfit(x,y,deg=1)#polyfit dostaje współrzędne i stopień i zwraca wektor współczynników wielomianu
+polyfit1 = np.polyfit(x,y,deg=1)    #polyfit dostaje współrzędne i stopień i zwraca wektor współczynników wielomianu
 polyfit2 = np.polyfit(x,y,deg=2)
 polyfit3 = np.polyfit(x,y,deg=3)
-p1 = np.poly1d(polyfit1)#poly1d dostaje współczynniki wielomianu i zwraca wielomianem
+p1 = np.poly1d(polyfit1)            #poly1d dostaje współczynniki wielomianu i zwraca wielomianem
 p2 = np.poly1d(polyfit2)
 p3 = np.poly1d(polyfit3)
 #print(np.poly1d(p1))
@@ -150,9 +126,9 @@ p3 = np.poly1d(polyfit3)
 plt.figure(num=None, figsize=(9, 7), dpi=80)
 #plt.plot(x,y, 'y-',label='y(x)')
 plt.plot(x,interp1d(x), 'k-',label='f. interpolująca')
-plt.plot(x,p1(x), 'c-',label='ap. w. 1-go st.')
-plt.plot(x,p2(x), 'g-',label='ap. w. 2-go st.')
-plt.plot(x,p3(x), 'm-',label='ap. w. 3-go st.')
+plt.plot(x,p1(x), 'c-',label='apr. w. 1-go st.')
+plt.plot(x,p2(x), 'g-',label='apr. w. 2-go st.')
+plt.plot(x,p3(x), 'm-',label='apr. w. 3-go st.')
 plt.title('Prędkość obrotowa silnika prądu stałego w zależności od napięcia jego zasilania',fontsize=12)
 plt.xlabel('napięcie [V]',fontsize=14)
 plt.ylabel('prędkość obrotowa [1000 RPM]',fontsize=14)
@@ -160,7 +136,7 @@ plt.legend(loc='lower right',prop={'size': 13})
 #plt.grid(True, which="both")
 plt.show()
 
-print("\nAproksymacja wielomianem 3-go stopnia ma przebieg bardzo zbliżony do interpolacji wielomianowej.")
+print("\nAproksymacja wielomianem 3-go stopnia ma przebieg bardzo zbliżony do interpolacji wielomianowej. Aproksymacja wielomianami pozostałych stopni również niewiele się różni.")
 
 
 print("\nZad4\n")
