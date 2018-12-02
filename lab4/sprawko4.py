@@ -104,18 +104,22 @@ print("Aby uniknąć tego efektu, stosuje się interpolację z węzłami coraz g
 
 
 print("\nZad3\n")
-x=[i for i in range(-10,11)]
-print(x)
+
+x0 = np.linspace(-20,20,200)
+
+
+x=np.arange(-10,11,1)
+#x=np.array(x)
+#x=np.linspace(-10,10,21)
 #x=[-10.0,-9.0,-8.0,-7.0,-6.0,-5.0,-4.0,-3.0,-2.0,-1.0,0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0]
 y=[-9.10,-8.82,-7.99,-7.10,-6.32,-5.33,-4.73,-3.65,-2.52,-1.28,0.00,1.26,2.49,3.61,4.61,5.51,6.32,7.10,7.81,8.45,9.02]
 
-#lg = scipy.interpolate.lagrange(x,y)
-interp1d = scipy.interpolate.interp1d(x,y,kind='linear')#interp1d zwraca funkcję interpolującą
+
 
 polyfit1 = np.polyfit(x,y,deg=1)    #polyfit dostaje współrzędne i stopień i zwraca wektor współczynników wielomianu
 polyfit2 = np.polyfit(x,y,deg=2)
 polyfit3 = np.polyfit(x,y,deg=3)
-p1 = np.poly1d(polyfit1)            #poly1d dostaje współczynniki wielomianu i zwraca wielomianem
+p1 = np.poly1d(polyfit1)            #poly1d dostaje współczynniki wielomianu i zwraca wielomian
 p2 = np.poly1d(polyfit2)
 p3 = np.poly1d(polyfit3)
 #print(np.poly1d(p1))
@@ -124,22 +128,28 @@ p3 = np.poly1d(polyfit3)
 
 
 plt.figure(num=None, figsize=(9, 7), dpi=80)
-#plt.plot(x,y, 'y-',label='y(x)')
-plt.plot(x,interp1d(x), 'k-',label='f. interpolująca')
-plt.plot(x,p1(x), 'c-',label='apr. w. 1-go st.')
-plt.plot(x,p2(x), 'g-',label='apr. w. 2-go st.')
-plt.plot(x,p3(x), 'm-',label='apr. w. 3-go st.')
+#plt.plot(x0,scipy.interpolate.interp1d(x,y,kind="cubic",bounds_error=False,fill_value="extrapolate")(x0), 'k-',label='f. interpolująca')
+plt.plot(x,y,'ro',label='zadane węzły')
+plt.plot(x0,lagrange(x,y)(x0), 'k-',label='f. interpolująca')
+plt.plot(x0,p1(x0), 'c-',label='apr. w. 1-go st.')
+plt.plot(x0,p2(x0), 'g-',label='apr. w. 2-go st.')
+plt.plot(x0,p3(x0), 'm-',label='apr. w. 3-go st.')
 plt.title('Prędkość obrotowa silnika prądu stałego w zależności od napięcia jego zasilania',fontsize=12)
 plt.xlabel('napięcie [V]',fontsize=14)
 plt.ylabel('prędkość obrotowa [1000 RPM]',fontsize=14)
+plt.ylim(bottom=-15,top=15)
 plt.legend(loc='lower right',prop={'size': 13})
 #plt.grid(True, which="both")
 plt.show()
 
-print("\nAproksymacja wielomianem 3-go stopnia ma przebieg bardzo zbliżony do interpolacji wielomianowej. Aproksymacja wielomianami pozostałych stopni również niewiele się różni.")
+print("\nW przypadku interpolacji wielomianowej mamy do czynienia z efekten Rungego - wartości pomiędzy węzłami na krańcach przedziału są odległe od oczekiwanych.")
+print("Dlatego lepiej jest użyć aproksymacji wielomianami. Na zadanym przedziale [-10,10] najlepiej sprawdza się wielomian 3-go stopnia, ale wielomiany pozostałych stopni lepiej aproksymują zakres rozszerzony.")
+
 
 
 print("\nZad4\n")
+
+t0 = np.linspace(0,3,200)
 
 t=[0.0,1.0,2.0,3.0]
 s=[0.0,42.7,73.2,92.5]
@@ -154,7 +164,6 @@ polycoefs2 = np.polyfit(s,t,deg=3)
 poly2 = np.poly1d(polycoefs2)
 #print(np.poly1d(poly)) 
 y=poly2(x)
-#print(y)
 print("Kierowca minął fotoradr po",round(y,2),"s." )
 
 v = scipy.misc.derivative(poly,y)
@@ -163,9 +172,9 @@ v=v*3.6
 print("Jechał z prędkością",round(v,2),"km/h.")
 
 plt.figure(num=None, figsize=(6, 4), dpi=80)
-plt.plot(t,poly(t), 'c-',label='położenie kierowcy w zależności od czasu')
+plt.plot(t0,poly(t0), 'c-',label='położenie kierowcy w zależności od czasu')
 #plt.plot(t,interp1d(t), 'r-',label='')
-plt.plot(y,x,'ro',label='fotoradar')
+plt.plot(y,x,'ro',label='położenie fotoradaru')
 plt.title('zależność położenia od czasu',fontsize=14)
 plt.xlabel('czas [s]',fontsize=11)
 plt.ylabel('położenie [m]',fontsize=11)
